@@ -29,7 +29,8 @@ from pymatgen.transformations.standard_transformations import AutoOxiStateDecora
 from pymatgen.transformations.standard_transformations import RotationTransformation
 from collections import defaultdict
 
-warnings.simplefilter("ignore", UserWarning)
+#warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 header = '''
     The Pennsylvania State University
@@ -142,7 +143,7 @@ def compile_elements(n,t1,t2,slab):
     layers = len(elements)
     composition_ref = re.findall(r'\d+', structure_oxi.composition.formula)
     composition_slab = re.findall(r'\d+', slab.composition.formula)
-    composition = ''.join(str(slab.composition.formula).split(' ')) + ", " + ':'.join(''.join(match) for match in re.findall(r'(\D+)(\d?+)', slab.composition.reduced_formula))
+    composition = ''.join(str(slab.composition.formula).split(' ')) + ", " + ':'.join(''.join(match) for match in re.findall(r'([A-Za-z]+)(\d*)', slab.composition.reduced_formula))
 
     # print(slab.get_surface_sites())
 
@@ -192,12 +193,14 @@ def compile_elements(n,t1,t2,slab):
         poscar.write_file(str(''.join(map(str, input_miller_indices))) + ('SYM' if input_symmetry == True else '') + 'slab' + str(n+1).zfill(2) + ('up' if t2 != t1 else 'sy') + '.vasp')
 
         fig = plt.figure(); ax = fig.add_subplot(111); plot_slab(slab, ax, adsorption_sites=True); ax.set_xlim(min(slab.lattice.matrix[0][0],slab.lattice.matrix[1][0])-2, max(slab.lattice.matrix[0][0],slab.lattice.matrix[1][0])+2); ax.set_ylim(min(slab.lattice.matrix[0][1],slab.lattice.matrix[1][1])-2, max(slab.lattice.matrix[0][1],slab.lattice.matrix[1][1])+2); plt.savefig(str(''.join(map(str, input_miller_indices))) + ('SYM' if input_symmetry == True else '') + 'slab' + str(n+1).zfill(2) + ('up' if t2 != t1 else 'sy') + '.png')
+        plt.close(fig)
 
         if t1 != t2:
             poscar = Poscar(inverse_slab, sort_structure=True)
             poscar.write_file(str(''.join(map(str, input_miller_indices))) + ('SYM' if input_symmetry == True else '') + 'slab' + str(n+1).zfill(2) + 'dn' + '.vasp')
 
             fig = plt.figure(); ax = fig.add_subplot(111); plot_slab(inverse_slab, ax, adsorption_sites=True); ax.set_xlim(min(slab.lattice.matrix[0][0],slab.lattice.matrix[1][0])-2, max(slab.lattice.matrix[0][0],slab.lattice.matrix[1][0])+2); ax.set_ylim(min(slab.lattice.matrix[0][1],slab.lattice.matrix[1][1])-2, max(slab.lattice.matrix[0][1],slab.lattice.matrix[1][1])+2); plt.savefig(str(''.join(map(str, input_miller_indices))) + ('SYM' if input_symmetry == True else '') + 'slab' + str(n+1).zfill(2) + 'dn' + '.png')
+            plt.close(fig)
 
         # convert_poscar_coords('POSCAR.slab' + str(n+1).zfill(2))
 
