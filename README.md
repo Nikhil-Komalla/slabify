@@ -1,4 +1,4 @@
-# slabs.py
+# slabify
 ## Linux Installation steps
 
 1. Go to home (cd ~)
