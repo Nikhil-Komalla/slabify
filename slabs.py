@@ -223,7 +223,11 @@ input_output = int(args_dict['output']) if 'output' in args_dict else 0
 
 structure = Poscar.from_file(input_structure).structure
 oxi_transformation = AutoOxiStateDecorationTransformation()
-structure_oxi = oxi_transformation.apply_transformation(structure)
+try:
+    structure_oxi = oxi_transformation.apply_transformation(structure)
+except Exception as e:
+    print(f"Error applying oxidation state transformation: {e}")
+    structure_oxi = structure
 
 # Use the SlabGenerator class to generate the slab
 slabgen = SlabGenerator(structure_oxi, input_miller_indices, min_slab_size=input_slab_size, min_vacuum_size=input_vacuum_size, center_slab=True)
